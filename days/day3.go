@@ -2,7 +2,6 @@ package day
 
 import (
 	_file "advent_of_code/helper/file"
-	"bufio"
 	"strconv"
 	"strings"
 )
@@ -12,25 +11,9 @@ type Day3 struct {
 }
 
 func CreateDay3(path string) Day3 {
-	r := _file.ReadTextFile(path, func(s *bufio.Scanner) interface{} {
-		data := make([]string, 0)
-
-		for s.Scan() {
-			data = append(data, s.Text())
-		}
-
-		return data
-	})
-
-	rOk, ok := r.([]string)
-
-	if ok {
-		return Day3{
-			binaries: rOk,
-		}
+	return Day3{
+		binaries: _file.ReadTextFile(path),
 	}
-
-	return Day3{}
 }
 
 type diagValues struct {

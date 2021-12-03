@@ -2,8 +2,6 @@ package day
 
 import (
 	_file "advent_of_code/helper/file"
-	"bufio"
-	"strconv"
 )
 
 type Day1 struct {
@@ -11,25 +9,9 @@ type Day1 struct {
 }
 
 func CreateDay1(path string) Day1 {
-	r := _file.ReadTextFile(path, func(s *bufio.Scanner) interface{} {
-		data := make([]int, 0)
-
-		for s.Scan() {
-			v, _ := strconv.Atoi(s.Text())
-			data = append(data, v)
-		}
-
-		return data
-	})
-	rOk, ok := r.([]int)
-
-	if ok {
-		return Day1{
-			data: rOk,
-		}
+	return Day1{
+		data: _file.ReadTextFileLinesAsInt(path),
 	}
-
-	return Day1{}
 }
 
 func (d Day1) GetStep1Result() int {

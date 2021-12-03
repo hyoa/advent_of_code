@@ -2,7 +2,6 @@ package day
 
 import (
 	_file "advent_of_code/helper/file"
-	"bufio"
 	"log"
 	"regexp"
 	"strconv"
@@ -26,29 +25,18 @@ type Day2 struct {
 }
 
 func CreateDay2(path string) Day2 {
-	data := _file.ReadTextFile(path, func(s *bufio.Scanner) interface{} {
-		directions := make([]string, 0)
-		for s.Scan() {
-			directions = append(directions, s.Text())
-		}
-
-		return directions
-	})
-
-	dataOk, ok := data.([]string)
+	data := _file.ReadTextFile(path)
 
 	directions := make([]movement, 0)
-	if ok {
-		for k := range dataOk {
-			r := regexp.MustCompile(`(?P<Direction>[\w]+) (?P<Value>[\d])`)
+	for k := range data {
+		r := regexp.MustCompile(`(?P<Direction>[\w]+) (?P<Value>[\d])`)
 
-			res := r.FindStringSubmatch(dataOk[k])
-			n, _ := strconv.Atoi(res[2])
-			directions = append(directions, movement{
-				direction: direction(res[1]),
-				number:    n,
-			})
-		}
+		res := r.FindStringSubmatch(data[k])
+		n, _ := strconv.Atoi(res[2])
+		directions = append(directions, movement{
+			direction: direction(res[1]),
+			number:    n,
+		})
 	}
 
 	return Day2{
