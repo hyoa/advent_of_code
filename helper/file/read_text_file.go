@@ -7,7 +7,7 @@ import (
 )
 
 func ReadTextFile(path string, parser func(*bufio.Scanner) interface{}) interface{} {
-	f, err := os.Open("input.txt")
+	f, err := os.Open(path)
 
 	if err != nil {
 		log.Fatal(err)
