@@ -3,7 +3,6 @@ package day
 import (
 	_file "advent_of_code/helper/file"
 	"strconv"
-	"strings"
 )
 
 type Day3 struct {
@@ -22,13 +21,7 @@ type diagValues struct {
 }
 
 func (d Day3) GetStep1Result() int {
-	binariesAsArray := make([][]string, 0)
-	for _, binary := range d.binaries {
-		c := strings.Split(binary, "")
-		binariesAsArray = append(binariesAsArray, c)
-	}
-
-	size := len(binariesAsArray[0])
+	size := len(d.binaries[0])
 
 	diag := diagValues{
 		gamma:   "",
@@ -38,12 +31,10 @@ func (d Day3) GetStep1Result() int {
 	for i := 0; i < size; i++ {
 		count1 := 0
 		count0 := 0
-		for _, b := range binariesAsArray {
-			if b[i] == "1" {
+		for _, b := range d.binaries {
+			if b[i:i+1] == "1" {
 				count1++
-			}
-
-			if b[i] == "0" {
+			} else {
 				count0++
 			}
 		}
