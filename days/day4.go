@@ -1,9 +1,9 @@
 package day
 
 import (
-	"fmt"
 	"io/ioutil"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -14,14 +14,14 @@ type Day4 struct {
 }
 
 type card struct {
-	column []line
-	row    []line
-	raw    string
+	column  []line
+	row     []line
+	raw     string
+	numbers []int
 }
 
 type line struct {
-	foundNumber    []int
-	notFoundNumber []int
+	numbers []int
 }
 
 func CreateDay4(path string) Day4 {
@@ -55,6 +55,8 @@ func CreateDay4(path string) Day4 {
 			numbers = append(numbers, n)
 		}
 
+		card.numbers = numbers
+
 		chunkSize := 5
 		for i := 0; i < len(numbers); i += chunkSize {
 			end := i + chunkSize
@@ -64,7 +66,7 @@ func CreateDay4(path string) Day4 {
 			}
 
 			line := line{
-				notFoundNumber: numbers[i:end],
+				numbers: numbers[i:end],
 			}
 
 			card.row = append(card.row, line)
@@ -78,12 +80,11 @@ func CreateDay4(path string) Day4 {
 			}
 
 			line := line{
-				notFoundNumber: column,
+				numbers: column,
 			}
 
 			card.column = append(card.column, line)
 		}
-
 		cards = append(cards, card)
 	}
 
@@ -94,74 +95,85 @@ func CreateDay4(path string) Day4 {
 }
 
 func (d Day4) GetStep1Result() int {
-	c, n := getWinningCard(d.draw, d.cards, "first")
-	return sumUnmarked(d.cards[c], n) * n
+	data := getWinningCards(d.draw, d.cards)
+	first := data[0]
+	return first.number * first.sumbUnmarked
 }
 
-func getWinningCard(draw []int, cards []card, position string) (int, int) {
-	fmt.Println("nb cards", len(cards))
-	cardsWinning := make([]int, 0)
-	var lastN int
-	var lastK1 int
-	for _, n := range draw {
-		fmt.Println(n)
-		if len(cardsWinning) == len(cards) {
-			fmt.Println(lastK1, lastN)
-			return lastK1, lastN
-		}
+type winningData struct {
+	number       int
+	count        int
+	sumbUnmarked int
+}
 
-		for k1, card := range cards {
-			fmt.Println(cardsWinning)
-			if existInSlice(cardsWinning, k1) {
-				continue
-			}
+func getWinningCards(draw []int, cards []card) []winningData {
+	data := make([]winningData, 0)
+	for _, card := range cards {
+		var winningNumber int
+		pulled := make([]int, 0)
+
+		columnsChecked := make(map[int]int)
+		rowsChecked := make(map[int]int)
+	out:
+		for _, n := range draw {
+			pulled = append(pulled, n)
 
 			for k2, column := range card.column {
-				for k3, number := range column.notFoundNumber {
+				for _, number := range column.numbers {
 					if number == n {
-						cards[k1].column[k2].notFoundNumber = remove(cards[k1].column[k2].notFoundNumber, k3)
-						cards[k1].column[k2].foundNumber = append(cards[k1].column[k2].foundNumber, n)
+						columnsChecked[k2] = columnsChecked[k2] + 1
 					}
 
-					if len(cards[k1].column[k2].foundNumber) == 5 {
-						fmt.Println("winning: ", n)
-						cardsWinning = append(cardsWinning, k1)
-						fmt.Println("cards", cardsWinning)
-						if position == "first" {
-							return k1, n
-						} else {
-							lastN = n
-							lastK1 = k1
-							continue
-						}
+					if columnsChecked[k2] == 5 {
+						winningNumber = n
+						break out
 					}
 				}
 			}
 
 			for k2, row := range card.row {
-				for k3, number := range row.notFoundNumber {
+				for _, number := range row.numbers {
 					if number == n {
-						cards[k1].row[k2].notFoundNumber = remove(cards[k1].row[k2].notFoundNumber, k3)
-						cards[k1].row[k2].foundNumber = append(cards[k1].row[k2].foundNumber, n)
+						rowsChecked[k2] = rowsChecked[k2] + 1
 					}
 
-					if len(cards[k1].row[k2].foundNumber) == 5 {
-						cardsWinning = append(cardsWinning, k1)
-						if position == "first" {
-							return k1, n
-						} else {
-							lastN = n
-							lastK1 = k1
-							continue
-						}
+					if rowsChecked[k2] == 5 {
+						winningNumber = n
+						break out
 					}
 				}
 			}
 		}
+
+		data = append(data, winningData{
+			sumbUnmarked: sumUnmarked(card, pulled),
+			count:        len(pulled),
+			number:       winningNumber,
+		})
 	}
 
-	fmt.Println(lastN)
-	return lastK1, lastN
+	sort.Slice(data, func(i, j int) bool {
+		return data[i].count < data[j].count
+	})
+
+	return data
+}
+
+func sumUnmarked(c card, p []int) int {
+	sum := 0
+	for _, u := range c.numbers {
+		if !existInSlice(p, u) {
+			sum += u
+		}
+	}
+
+	return sum
+}
+
+func (d Day4) GetStep2Result() int {
+	data := getWinningCards(d.draw, d.cards)
+	last := data[len(data)-1]
+	return last.number * last.sumbUnmarked
 }
 
 func existInSlice(s []int, i int) bool {
@@ -189,32 +201,4 @@ func unique(intSlice []int) []int {
 		}
 	}
 	return list
-}
-
-func sumUnmarked(c card, n int) int {
-	unmarked := make([]int, 0)
-	for _, p := range c.column {
-		unmarked = append(unmarked, p.notFoundNumber...)
-	}
-
-	for _, p := range c.row {
-		unmarked = append(unmarked, p.notFoundNumber...)
-	}
-
-	unmarked = unique(unmarked)
-	sum := 0
-	for _, u := range unmarked {
-		if u != n {
-			sum += u
-		}
-	}
-
-	return sum
-}
-
-func (d Day4) GetStep2Result() int {
-	c, n := getWinningCard(d.draw, d.cards, "last")
-	// fmt.Printf("%#v\n", d.cards[c])
-	// fmt.Println(n)
-	return sumUnmarked(d.cards[c], n) * n
 }
