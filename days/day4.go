@@ -97,13 +97,13 @@ func CreateDay4(path string) Day4 {
 func (d Day4) GetStep1Result() int {
 	data := getWinningCards(d.draw, d.cards)
 	first := data[0]
-	return first.number * first.sumbUnmarked
+	return first.number * first.sumUnmarked
 }
 
 type winningData struct {
-	number       int
-	count        int
-	sumbUnmarked int
+	number      int
+	count       int
+	sumUnmarked int
 }
 
 func getWinningCards(draw []int, cards []card) []winningData {
@@ -146,9 +146,9 @@ func getWinningCards(draw []int, cards []card) []winningData {
 		}
 
 		data = append(data, winningData{
-			sumbUnmarked: sumUnmarked(card, pulled),
-			count:        len(pulled),
-			number:       winningNumber,
+			sumUnmarked: sumUnmarked(card, pulled),
+			count:       len(pulled),
+			number:      winningNumber,
 		})
 	}
 
@@ -173,7 +173,7 @@ func sumUnmarked(c card, p []int) int {
 func (d Day4) GetStep2Result() int {
 	data := getWinningCards(d.draw, d.cards)
 	last := data[len(data)-1]
-	return last.number * last.sumbUnmarked
+	return last.number * last.sumUnmarked
 }
 
 func existInSlice(s []int, i int) bool {
