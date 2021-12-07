@@ -3,6 +3,7 @@ package day
 import (
 	_file "advent_of_code/helper/file"
 	"math"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -32,9 +33,12 @@ func (d Day7) GetStep1Result() int {
 }
 
 func getCheapestCost(positions []int, increment bool) int {
-	directionCost := make(map[int]int)
 
-	for i := 1; i <= len(positions); i++ {
+	directionCost := make(map[int]int)
+	uniquePosition := unique(positions)
+	sort.Ints(uniquePosition)
+
+	for i := 1; i <= uniquePosition[len(uniquePosition)-1]; i++ {
 		cost := 0
 		for _, n := range positions {
 			c := int(math.Abs(float64(n) - float64(i)))
@@ -59,6 +63,18 @@ func getCheapestCost(positions []int, increment bool) int {
 	}
 
 	return less
+}
+
+func unique(intSlice []int) []int {
+	keys := make(map[int]bool)
+	list := []int{}
+	for _, entry := range intSlice {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
+	}
+	return list
 }
 
 func (d Day7) GetStep2Result() int {
