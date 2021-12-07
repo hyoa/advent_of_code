@@ -2,6 +2,7 @@ package helper
 
 import (
 	"bufio"
+	"io/ioutil"
 	"log"
 	"os"
 	"strconv"
@@ -60,4 +61,10 @@ func ReadTextFileLinesAsInt(path string) []int {
 	}
 
 	return numbers
+}
+
+func GetFileContent(path string) string {
+	content, _ := ioutil.ReadFile(path)
+
+	return string(content)
 }
