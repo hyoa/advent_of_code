@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	d := _days.CreateDay7("inputs/day7/input.txt")
+	d := _days.CreateDay8("inputs/day8/input.txt")
 
 	fmt.Println(d.GetStep1Result(), d.GetStep2Result())
 }
