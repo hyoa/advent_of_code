@@ -23,6 +23,8 @@ func TestDay(t *testing.T) {
 		{d: CreateDay6("../inputs/day6/input_test.txt"), step1: 5934, step2: 26984457539},
 		{d: CreateDay7("../inputs/day7/input_test.txt"), step1: 37, step2: 168},
 		{d: CreateDay8("../inputs/day8/input_test.txt"), step1: 26, step2: 61229},
+		{d: CreateDay9("../inputs/day9/input_test.txt"), step1: 15, step2: 1134},
+		{d: CreateDay10("../inputs/day10/input_test.txt"), step1: 26397, step2: 288957},
 	}
 
 	for _, tc := range tests {

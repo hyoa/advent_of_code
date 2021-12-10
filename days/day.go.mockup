@@ -1,0 +1,16 @@
+package day
+
+type DayX struct {
+}
+
+func CreateDayX(path string) DayX {
+	return DayX{}
+}
+
+func (d DayX) GetStep1Result() int {
+  return 0
+}
+
+func (d DayX) GetStep2Result() int {
+  return 0
+}
